@@ -1,0 +1,906 @@
+1
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [Sales].[Customer].[CustomerID], [Person].[Person].[FirstName],[Person].[Person].[MiddleName], [Person].[Person].[LastName], [Sales].[Store].[Name]
+FROM [Sales].[Customer] JOIN [Person].[Person] 
+ON [Sales].[Customer].[PersonID] = [Person].[Person].[BusinessEntityID] 
+JOIN [Sales].[Store] 
+ON [Sales].[Customer].[StoreID] = [Sales].[Store].[BusinessEntityID];
+
+2
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT DISTINCT [Sales].[SalesOrderDetail].[ProductID], [Production].[Product].[Name], [Production].[Product].Color FROM [Sales].[SalesOrderDetail]
+JOIN [Production].[Product]
+ON [Production].[Product].[ProductID] = [Sales].[SalesOrderDetail].[ProductID]
+
+3
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [Sales].[SalesOrderHeader].[CustomerID], [Sales].[SalesOrderHeader].[SalesOrderID] FROM [Sales].[SalesOrderHeader]
+
+4
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [BusinessEntityID],[LoginID],[JobTitle] FROM [HumanResources].[Employee]
+WHERE [JobTitle] = 'Research and Development Engineer';
+
+5
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [FirstName],[MiddleName],[LastName],[BusinessEntityID] FROM [Person].[Person]
+WHERE [MiddleName] = 'J.'
+
+
+6
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT * FROM [Production].[ProductCostHistory]
+WHERE [ModifiedDate] = CAST('2006-06-30 00:00:00.000' AS DATE)
+
+7
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [BusinessEntityID],[LoginID],[JobTitle] FROM [HumanResources].[Employee]
+WHERE [JobTitle] != 'Research and Development Engineer';
+
+8
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [BusinessEntityID],[FirstName],[MiddleName],[LastName],[ModifiedDate]  FROM [Person].[Person]
+WHERE [ModifiedDate] > CAST('2000-12-29' AS DATE)
+ORDER BY ModifiedDate;
+
+
+9
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [BusinessEntityID],[FirstName],[MiddleName],[LastName],[ModifiedDate] FROM [Person].[Person]
+WHERE [ModifiedDate] != CAST('2000-12-29' AS DATE)
+ORDER BY ModifiedDate;
+
+10
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [BusinessEntityID],[FirstName],[MiddleName],[LastName],[ModifiedDate] FROM [Person].[Person]
+WHERE [ModifiedDate] >= CAST('2001-12-1' AS DATE) AND [ModifiedDate] <= CAST('2001-12-31' AS DATE)
+ORDER BY ModifiedDate;
+
+11
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [SalesOrderID], [OrderDate], [TotalDue]  FROM [Sales].[SalesOrderHeader]
+WHERE ([OrderDate] >= CAST('2005-09-1' AS DATE) AND [OrderDate] <= CAST('2005-09-3' AS DATE))
+AND [TotalDue] > 1000
+ORDER BY [OrderDate];
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [SalesOrderID], [OrderDate], [TotalDue]  FROM [Sales].[SalesOrderHeader]
+WHERE ([OrderDate] = CAST('2005-09-1' AS DATE) OR [OrderDate] = CAST('2005-09-2' AS DATE) OR [OrderDate] = CAST('2005-09-3' AS DATE))
+AND [TotalDue] > 1000
+ORDER BY [OrderDate];
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [SalesOrderID], [OrderDate], [TotalDue]  FROM [Sales].[SalesOrderHeader]
+WHERE [TotalDue] > 1000 AND [OrderDate] IN (CAST('2005-09-1' AS DATE), CAST('2005-09-2' AS DATE), CAST('2005-09-3' AS DATE))
+ORDER BY [OrderDate];
+
+12
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT * FROM [Sales].[SalesOrderHeader]
+WHERE ([SalesPersonID] = 279 OR [TerritoryID] = 6)
+AND [TotalDue] > 1000
+ORDER BY [OrderDate];
+
+13
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT * FROM [Sales].[SalesOrderHeader]
+WHERE ([SalesPersonID] = 279 OR [TerritoryID] = 6 OR [TerritoryID] = 4)
+AND [TotalDue] > 1000
+ORDER BY [OrderDate];
+
+14
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [ProductID],Name,Color  FROM [Production].[Product]
+WHERE Color IS NULL;
+
+15
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [ProductID],Name,Color  FROM [Production].[Product]
+WHERE Color NOT LIKE 'Blue';
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [ProductID],Name,Color  FROM [Production].[Product]
+WHERE Color != 'Blue';
+
+16
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [ProductID],Name,Style,Size,Color FROM [Production].[Product]
+WHERE Style IS NOT NULL OR Size IS NOT NULL OR Color IS NOT NULL;
+
+17
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [BusinessEntityID],[FirstName],[MiddleName],[LastName] FROM [Person].[Person]
+ORDER BY [LastName],[FirstName],[MiddleName];
+
+18
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT [BusinessEntityID],[FirstName],[MiddleName],[LastName] FROM [Person].[Person]
+ORDER BY [MiddleName],[FirstName],[LastName];
+
+19
+
+USE [AdventureWorks2008R2]
+
+GO
+SELECT (AddressLine1+ ' ' + City + ' ' + PostalCode) AS 'Person Adress' FROM [Person].[Address];
+
+20
+
+SELECT [ProductID],COALESCE(Color, 'Sin Color') AS Color,Name FROM [Production].[Product];
+
+21
+
+SELECT (Name + ' ' +  COALESCE(Color, '')) AS 'Name: Color' FROM [Production].[Product];
+
+22
+
+SELECT (CAST([ProductID] AS varchar) + ': ' + Name) AS 'ProductID: Name' FROM [Production].[Product];
+
+23
+
+SELECT SpecialOfferID, Description, (MaxQty - MinQty) AS 'Difference Qty'  FROM [Sales].[SpecialOffer];
+
+24
+
+SELECT SpecialOfferID, Description, (MinQty * DiscountPct) AS 'MinQty * DiscountPct'  FROM [Sales].[SpecialOffer];
+
+25
+
+SELECT SpecialOfferID, Description, (COALESCE(MaxQty, 10) * DiscountPct) AS 'MinQty * DiscountPct' FROM [Sales].[SpecialOffer];
+
+26
+
+SELECT LEFT([AddressLine1], 10) AS 'AddressLine1' FROM [Person].[Address];
+
+27
+
+SELECT UPPER([FirstName]), UPPER([LastName]) FROM [Person].[Person];
+
+28
+
+SELECT SUBSTRING(ProductNumber, 4,charindex('_', ProductNumber + '_') - 1) AS 'ProductNumber' FROM [Production].[Product];
+
+29
+
+SELECT SalesOrderID, OrderDate, ShipDate, DATEDIFF(day,OrderDate, ShipDate) AS 'DateDifference' FROM [Sales].[SalesOrderHeader];
+
+30
+
+SELECT CAST(OrderDate AS DATE) AS OrderDate, CAST(ShipDate AS DATE) AS ShipDate FROM [Sales].[SalesOrderHeader];
+
+31
+
+SELECT SalesOrderID, DATEADD(MONTH, 6, OrderDate) AS OrderDate FROM [Sales].[SalesOrderHeader];
+
+32
+
+SELECT SalesOrderID,OrderDate, YEAR(OrderDate) AS 'OrderDateYear', MONTH(OrderDate) AS 'OrderDateMonth' FROM [Sales].[SalesOrderHeader];
+
+33
+
+SELECT SalesOrderID,OrderDate, YEAR(OrderDate) AS 'OrderDateYear', DateName(MONTH,OrderDate) AS 'OrderDateMonth' FROM [Sales].[SalesOrderHeader];
+
+34
+
+SELECT SalesOrderID,ROUND(SubTotal, 2) AS SubTotal FROM [Sales].[SalesOrderHeader];
+
+35
+
+SELECT SalesOrderID,FORMAT(ROUND(SubTotal, 2), '00.0000') AS SubTotal FROM [Sales].[SalesOrderHeader];
+
+36
+
+SELECT SQRT(SalesOrderID) AS SalesOrderIDSqareRoot FROM [Sales].[SalesOrderHeader];
+
+37
+
+SELECT RAND() * 9 + 1;
+
+38
+
+SELECT SalesOrderID, OrderDate FROM [Sales].[SalesOrderHeader]
+WHERE OrderDate >= CAST('2005-01-01 00:00:00.000' AS DATE) AND OrderDate < CAST('2006-01-01 00:00:00.000' AS DATE);
+
+39
+
+SELECT SalesOrderID, OrderDate FROM [Sales].[SalesOrderHeader]
+ORDER BY MONTH(OrderDate),YEAR(OrderDate);
+
+40
+
+SELECT [PersonType], [FirstName], LastName FROM [Person].[Person]
+ORDER BY
+	CASE
+		WHEN [PersonType] = 'IN' OR [PersonType] = 'SP' OR [PersonType] = 'SC' THEN LastName
+		ELSE FirstName
+	END;
+
+41
+
+SELECT JobTitle, BirthDate, LastName FROM [HumanResources].[Employee] 
+JOIN [Person].[Person] 
+ON [HumanResources].[Employee].BusinessEntityID =[Person].[Person].[BusinessEntityID];
+
+42
+
+SELECT CustomerID, StoreID, TerritoryID,FirstName, MiddleName, LastName FROM [Sales].[Customer] 
+JOIN [Person].[Person] 
+ON [Sales].[Customer].CustomerID = [Person].[Person].[BusinessEntityID];
+
+43
+
+SELECT [Sales].[Customer].CustomerID, [SalesOrderID], [Sales].[Customer].StoreID, [Sales].[Customer].TerritoryID, FirstName, MiddleName, LastName 
+FROM [Sales].[Customer] 
+JOIN [Person].[Person] 
+ON [Sales].[Customer].CustomerID = [Person].[Person].[BusinessEntityID]
+JOIN [Sales].[SalesOrderHeader]
+ON [Sales].[Customer].CustomerID = [Sales].[SalesOrderHeader].CustomerID;
+
+44
+
+SELECT  SalesOrderID, SalesQuota, Bonus
+FROM [Sales].[SalesOrderHeader]
+JOIN [Sales].[SalesPerson]
+ON [Sales].[SalesOrderHeader].SalesPersonID = [Sales].[SalesPerson].[BusinessEntityID];
+
+
+45
+
+SELECT  SalesOrderID, SalesQuota, Bonus, FirstName, MiddleName, LastName
+FROM [Sales].[SalesOrderHeader]
+JOIN [Sales].[SalesPerson]
+ON [Sales].[SalesOrderHeader].SalesPersonID = [Sales].[SalesPerson].[BusinessEntityID]
+JOIN Person.Person
+ON Sales.SalesPerson.BusinessEntityID = Person.Person.BusinessEntityID;
+
+46
+
+SELECT  Color, Size, CatalogDescription
+FROM [Production].[ProductModel]
+JOIN [Production].[Product]
+ON [Production].[ProductModel].ProductModelID = [Production].[Product].ProductModelID;
+
+47
+
+SELECT  FirstName, MiddleName, LastName, Product.Name
+FROM [Person].[Person]
+JOIN Sales.Customer
+ON Person.Person.BusinessEntityID = Sales.Customer.CustomerID
+JOIN Sales.SalesOrderHeader
+ON Sales.Customer.CustomerID = Sales.SalesOrderHeader.CustomerID
+JOIN Sales.SalesOrderDetail
+ON Sales.SalesOrderHeader.SalesOrderID = Sales.SalesOrderDetail.SalesOrderID
+JOIN Production.Product
+ON Sales.SalesOrderDetail.ProductID = Production.Product.ProductID;
+
+48
+
+SELECT  Product.Name, Sales.SalesOrderDetail.SalesOrderID
+FROM Production.Product
+LEFT JOIN Sales.SalesOrderDetail
+ON Sales.SalesOrderDetail.ProductID = Production.Product.ProductID;
+
+49
+
+SELECT  Product.Name, Sales.SalesOrderDetail.SalesOrderID
+FROM Production.Product
+LEFT JOIN Sales.SalesOrderDetail
+ON Sales.SalesOrderDetail.ProductID = Production.Product.ProductID
+WHERE Sales.SalesOrderDetail.SalesOrderID IS NULL;
+
+50
+
+SELECT Sales.SalesOrderHeader.SalesOrderID, SalesPersonID, SalesYTD
+FROM Sales.SalesPerson
+LEFT JOIN Sales.SalesOrderHeader
+ON Sales.SalesPerson.BusinessEntityID = Sales.SalesOrderHeader.SalesOrderID;
+
+51
+
+SELECT Sales.SalesOrderHeader.SalesOrderID, SalesPersonID, SalesYTD, Person.Person.FirstName
+FROM Sales.SalesPerson
+LEFT JOIN Sales.SalesOrderHeader
+ON Sales.SalesPerson.BusinessEntityID = Sales.SalesOrderHeader.SalesOrderID
+JOIN Person.Person
+ON Sales.SalesPerson.BusinessEntityID =  Person.Person.BusinessEntityID;
+
+52
+
+SELECT Sales.CurrencyRate.CurrencyRateID, AverageRate, SalesOrderID, ShipBase
+FROM Sales.SalesOrderHeader
+LEFT JOIN Sales.CurrencyRate
+ON Sales.SalesOrderHeader.CurrencyRateID = Sales.CurrencyRate.CurrencyRateID
+LEFT JOIN Purchasing.ShipMethod
+ON Sales.SalesOrderHeader.ShipMethodID =  Purchasing.ShipMethod.ShipMethodID;
+
+53
+
+SELECT BusinessEntityID, ProductID
+FROM Sales.SalesPerson
+FULL OUTER JOIN Production.Product
+ON BusinessEntityID = Production.Product.ProductID;
+
+54
+
+SELECT Name, ProductID
+FROM Production.Product
+WHERE ProductID IN (SELECT Sales.SalesOrderDetail.ProductID FROM Sales.SalesOrderDetail);
+
+55
+
+SELECT Name, ProductID
+FROM Production.Product
+WHERE ProductID NOT IN (SELECT Sales.SalesOrderDetail.ProductID FROM Sales.SalesOrderDetail);
+
+56
+
+SELECT *
+FROM [Production].[ProductColor]
+WHERE NOT EXISTS (SELECT Color FROM Production.Product);
+
+57
+
+SELECT DISTINCT Color
+FROM [Production].Product
+WHERE Color NOT IN (SELECT Color FROM Production.ProductColor);
+
+58
+
+SELECT ModifiedDate
+FROM Person.Person
+UNION
+SELECT HireDate
+FROM HumanResources.Employee;
+
+59
+
+SELECT Header.SalesOrderID, OrderDate, ProductID
+FROM
+(SELECT SalesOrderID, OrderDate
+FROM Sales.SalesOrderHeader) AS Header
+JOIN 
+(SELECT SalesOrderID, ProductID FROM Sales.SalesOrderDetail
+) AS Detail
+ON Header.SalesOrderID = Detail.SalesOrderID
+
+ORDER BY SalesOrderID;
+
+60 pag 18
+
+WITH New_Details
+	AS(
+SELECT Header.SalesOrderID, OrderDate, ProductID
+FROM
+(SELECT SalesOrderID, OrderDate
+FROM Sales.SalesOrderHeader) AS Header
+JOIN 
+(SELECT SalesOrderID, ProductID FROM Sales.SalesOrderDetail
+) AS Detail
+ON Header.SalesOrderID = Detail.SalesOrderID
+
+)
+
+SELECT * FROM New_Details
+ORDER BY SalesOrderID;
+
+61
+
+WITH New_Details
+	AS(
+SELECT Header.SalesOrderID, OrderDate, ProductID, CustomerID
+FROM
+(SELECT SalesOrderID, OrderDate, CustomerID
+FROM Sales.SalesOrderHeader
+WHERE YEAR(OrderDate) = 2005) AS Header
+JOIN 
+(SELECT SalesOrderID, ProductID FROM Sales.SalesOrderDetail
+) AS Detail
+ON Header.SalesOrderID = Detail.SalesOrderID
+)
+
+SELECT * FROM New_Details
+ORDER BY SalesOrderID;
+
+62
+
+SELECT CustomerID FROM Sales.Customer;
+
+63
+
+SELECT SUM(OrderQty) AS 'Total Productos' FROM Sales.SalesOrderDetail;
+
+64
+
+SELECT MAX(UnitPrice) AS 'Mas Caro' FROM Sales.SalesOrderDetail;
+
+65
+
+SELECT AVG(UnitPrice) AS 'Promedio' FROM Sales.SalesOrderDetail
+WHERE ProductID = (SELECT ProductID FROM Production.Product WHERE Name = 'Sport-100 Helmet, Red');
+
+66
+
+SELECT MIN(ListPrice) AS 'Min', MAX(ListPrice) AS 'Max', AVG(ListPrice) AS 'Promedio' FROM Production.Product;
+
+67
+
+SELECT ProductID,SUM(OrderQty) AS OrderQty FROM Sales.SalesOrderDetail
+GROUP BY ProductID;
+
+68
+
+SELECT ProductID,COUNT(SalesOrderID) AS OrderQty FROM Sales.SalesOrderDetail
+GROUP BY ProductID;
+
+69
+
+SELECT COUNT(ProductNumber) AS 'Product ' FROM Production.Product
+GROUP BY ProductID;
+
+70
+
+SELECT COUNT([OrderDate]) AS 'Orders By Year' FROM Sales.SalesOrderHeader
+
+GROUP BY YEAR([OrderDate]);
+
+71
+
+SELECT COUNT([SalesOrderDetailID]) AS 'Total Order Details' FROM Sales.SalesOrderDetail;
+
+72
+
+SELECT SalesOrderID, SUM(LineTotal) AS 'Total Order Details' FROM Sales.SalesOrderDetail
+GROUP BY SalesOrderID
+HAVING SUM(LineTotal)>1000;
+
+73
+
+SELECT ProductModelID, COUNT(ProductModelID) AS 'Amount Product Model ID' FROM Production.Product
+GROUP BY ProductModelID
+HAVING COUNT(ProductModelID) = 1;
+
+74
+
+SELECT Color, COUNT(ProductModelID) AS 'Amount Product Model ID' FROM Production.Product
+GROUP BY Color
+HAVING Color = 'Red' OR Color = 'Blue';
+
+75
+
+SELECT COUNT(DISTINCT ProductModelID) AS 'Amount Product Model ID' FROM Production.Product;
+
+76
+
+SELECT COUNT(DISTINCT TerritoryID) AS 'Amount Product Model ID' FROM Sales.SalesOrderHeader;
+
+77
+
+SELECT FirstName, MiddleName, LastName, COUNT(Sales.SalesOrderHeader.SalesOrderID) AS 'Orders Made' FROM Person.Person
+JOIN Sales.Customer
+ON Person.BusinessEntityID = Sales.Customer.CustomerID
+JOIN Sales.SalesOrderHeader
+ON Sales.Customer.CustomerID = Sales.SalesOrderHeader.CustomerID
+GROUP BY Customer.CustomerID, FirstName, MiddleName, LastName;
+
+78
+
+SELECT Sales.SalesOrderDetail.ProductID, OrderDate, COUNT(Sales.SalesOrderHeader.SalesOrderID) AS 'Orders Made' 
+FROM Sales.SalesOrderHeader
+JOIN Sales.SalesOrderDetail
+ON Sales.SalesOrderHeader.SalesOrderID = Sales.SalesOrderDetail.SalesOrderID
+JOIN Production.Product
+ON Sales.SalesOrderDetail.ProductID = Production.Product.ProductID
+GROUP BY Sales.SalesOrderDetail.ProductID, OrderDate;
+
+79
+
+USE [AdventureWorks2008R2]
+
+GO
+INSERT INTO dbo.DemoProduct (ProductID, [Name], Color, StandardCost, ListPrice, Size, [Weight])
+(SELECT ProductID, [Name], Color, StandardCost, ListPrice, Size, [Weight] FROM [Production].[Product]
+WHERE [Name] LIKE 'Flat Washer 1');
+
+USE [AdventureWorks2008R2]
+
+GO
+INSERT INTO dbo.DemoProduct (ProductID, [Name], Color, StandardCost, ListPrice, Size, [Weight])
+(SELECT ProductID, [Name], Color, StandardCost, ListPrice, Size, [Weight] FROM [Production].[Product]
+WHERE [Name] LIKE 'Flat Washer 2');
+
+USE [AdventureWorks2008R2]
+
+GO
+INSERT INTO dbo.DemoProduct (ProductID, [Name], Color, StandardCost, ListPrice, Size, [Weight])
+(SELECT ProductID, [Name], Color, StandardCost, ListPrice, Size, [Weight] FROM [Production].[Product]
+WHERE [Name] LIKE 'Flat Washer 3');
+
+USE [AdventureWorks2008R2]
+
+GO
+INSERT INTO dbo.DemoProduct (ProductID, [Name], Color, StandardCost, ListPrice, Size, [Weight])
+(SELECT ProductID, [Name], Color, StandardCost, ListPrice, Size, [Weight] FROM [Production].[Product]
+WHERE [Name] LIKE 'Flat Washer 4');
+
+USE [AdventureWorks2008R2]
+
+GO
+INSERT INTO dbo.DemoProduct (ProductID, [Name], Color, StandardCost, ListPrice, Size, [Weight])
+(SELECT ProductID, [Name], Color, StandardCost, ListPrice, Size, [Weight] FROM [Production].[Product]
+WHERE [Name] LIKE 'Flat Washer 5');
+
+80
+
+INSERT INTO dbo.demoSalesOrderHeader(SalesOrderID, SalesID, OrderDate, CustomerID, SubTotal, TaxAmt, Freight, DateEntered, TotalDue, RV)
+(SELECT ProductID, [Name], Color, StandardCost, ListPrice, Size, [Weight] FROM [Production].[Product]
+WHERE [Name] LIKE 'Ch%');
+
+81
+
+USE [AdventureWorks2008R2]
+
+GO
+INSERT INTO dbo.demoSalesOrderHeader(SalesOrderID, OrderDate, CustomerID, SubTotal, TaxAmt, Freight)
+(SELECT SalesOrderID, OrderDate, CustomerID, SubTotal, TaxAmt, Freight FROM Sales.SalesOrderHeader);
+
+82
+
+SELECT Sales.SalesOrderHeader.CustomerID, COUNT(SalesOrderID) AS 'Total Sales', SUM(SubTotal+TaxAmt) AS 'Total Due'
+INTO dbo.tempCustomerSales
+FROM Sales.SalesOrderHeader JOIN Sales.Customer 
+ON Sales.Customer.CustomerID = Sales.SalesOrderHeader.CustomerID
+GROUP BY Sales.SalesOrderHeader.CustomerID;
+
+83
+
+INSERT INTO dbo.demoProduct (ProductID, Name, Color, StandardCost,ListPrice, Size,Weight)
+SELECT ProductID, Name, Color, StandardCost,ListPrice, Size,Weight
+FROM Production.Product
+WHERE ProductID NOT IN (SELECT ProductID FROM dbo.demoProduct);
+
+84
+
+SET IDENTITY_INSERT dbo.demoAddress ON;
+
+INSERT INTO dbo.demoAddress(AddressID,AddressLine1,AddressLine2,City, StateProvince, CountryRegion, PostalCode)
+SELECT AddressID,AddressLine1,AddressLine2,City, StateProvince.Name, CountryRegion.Name, PostalCode
+FROM Person.Address
+JOIN Person.StateProvince
+ON Person.Address.StateProvinceID = Person.StateProvince.StateProvinceID
+JOIN Person.CountryRegion
+ON Person.StateProvince.CountryRegionCode = Person.CountryRegion.CountryRegionCode;
+
+85
+
+DELETE FROM dbo.demoCustomer
+WHERE PersonID IN (SELECT BusinessEntityID FROM Person.Person WHERE LastName LIKE 'S%')
+
+86
+
+DELETE FROM dbo.demoCustomer
+WHERE CustomerID NOT IN (SELECT CustomerID FROM dbo.demoSalesOrderHeader) OR
+CustomerID NOT IN (SELECT CustomerID FROM dbo.demoSalesOrderHeader WHERE TotalDue < 1000)
+
+87
+
+DELETE FROM dbo.demoProduct
+WHERE ProductID NOT IN (SELECT ProductID FROM dbo.demoSalesOrderDetail)
+
+88
+
+UPDATE dbo.demoAddress
+SET AddressLine2 = 'N/A'
+WHERE AddressLine2 IS NULL;
+
+89
+
+UPDATE dbo.demoProduct
+SET ListPrice = ListPrice * 1.10
+WHERE ListPrice > 0;
+
+90
+
+UPDATE dbo.demoSalesOrderDetail
+SET UnitPrice = dbo.demoProduct.ListPrice
+FROM dbo.demoSalesOrderDetail
+INNER JOIN
+dbo.demoProduct
+ON dbo.demoSalesOrderDetail.ProductID = dbo.demoProduct.ProductID;
+
+91
+
+UPDATE dbo.demoSalesOrderHeader
+SET SubTotal = dbo.demoProduct.ListPrice * dbo.demoSalesOrderDetail.OrderQty
+FROM dbo.demoSalesOrderHeader
+INNER JOIN dbo.demoSalesOrderDetail
+ON dbo.demoSalesOrderHeader.SalesOrderID = dbo.demoSalesOrderDetail.SalesOrderID
+INNER JOIN dbo.demoProduct
+ON dbo.demoSalesOrderDetail.ProductID = dbo.demoProduct.ProductID;
+
+92
+
+CREATE TABLE #CustomerInfo
+(
+	CustomerID int,
+	FirstName varchar(50),
+	LastName varchar(50),
+	CountOfSales int,
+	SumOfTotalDue int
+);
+
+
+
+INSERT INTO #CustomerInfo (CustomerID, FirstName, LastName)
+SELECT Sales.Customer.CustomerID, FirstName, LastName
+FROM Sales.SalesOrderHeader 
+JOIN Sales.Customer 
+ON Sales.SalesOrderHeader.CustomerID =  Sales.Customer.CustomerID
+JOIN Person.Person 
+ON Sales.Customer.CustomerID = Person.Person.BusinessEntityID
+
+93
+
+DECLARE @CustomerInfo TABLE
+(
+	CustomerID int,
+	FirstName varchar(50),
+	LastName varchar(50),
+	CountOfSales int,
+	SumOfTotalDue int
+);
+
+
+
+INSERT INTO @CustomerInfo (CustomerID, FirstName, LastName)
+SELECT Sales.Customer.CustomerID, FirstName, LastName
+FROM Sales.SalesOrderHeader 
+JOIN Sales.Customer 
+ON Sales.SalesOrderHeader.CustomerID =  Sales.Customer.CustomerID
+JOIN Person.Person 
+ON Sales.Customer.CustomerID = Person.Person.BusinessEntityID
+
+
+Select * FROM @CustomerInfo
+
+94
+
+DECLARE @RandomNumbers TABLE
+(
+	FirstNumber int IDENTITY(1,1),
+	SecondNumber int
+);
+
+DECLARE @FirstNumb INT;
+SET @FirstNumb = 1;
+WHILE  @FirstNumb < 1001  
+BEGIN  
+   INSERT INTO  @RandomNumbers (SecondNumber)
+      VALUES(CAST(RAND() * 10000 AS INT) + 1)
+	  SET @FirstNumb = @FirstNumb + 1 
+END;  
+
+
+DECLARE @count INT;
+SET @count = 1;
+
+DECLARE @selectedNum INT;
+SET @selectedNum = 0;
+
+WHILE @Count < 1001  
+BEGIN  
+   SET @selectedNum = (SELECT SecondNumber FROM @RandomNumbers WHERE FirstNumber = @Count)
+   PRINT (@selectedNum)
+   SET @Count = @Count + 1
+END;
+
+
+95
+
+CREATE TABLE dbo.testCustomer (
+	CustomerID INT PRIMARY KEY IDENTITY,
+	FirstName varchar(50),
+	LastName varchar(50),
+	Age INT,
+	CHECK (Age<120),
+	Response varchar(1) DEFAULT 'Y',
+	CONSTRAINT Response CHECK (Response IN ('Y', 'N'))
+)
+
+SET IDENTITY_INSERT dbo.testCustomer ON;
+
+INSERT INTO dbo.testCustomer (CustomerID, FirstName, LastName, Age, Response)
+VALUES (1,'Paula','Rodriguez',67,'N');
+
+INSERT INTO dbo.testCustomer (CustomerID, FirstName, LastName, Age, Response)
+VALUES (2,'Juan','Perez',54,'Y');
+
+INSERT INTO dbo.testCustomer (CustomerID, FirstName, LastName, Age, Response)
+VALUES (3,'Jack','Black',32,'Y');
+
+INSERT INTO dbo.testCustomer (CustomerID, FirstName, LastName, Age, Response)
+VALUES (4,'Cloe','Phillips',64,'N');
+
+INSERT INTO dbo.testCustomer (CustomerID, FirstName, LastName, Age, Response)
+VALUES (5,'Peter','James',12,'N');
+
+96 
+
+CREATE TABLE dbo.testOrder (
+	
+	OrderID INT PRIMARY KEY IDENTITY,
+	OrderDate datetime DEFAULT GETDATE(),
+	ROWVERSION INT,
+	CustomerID INT
+	CONSTRAINT FK_CustomerID FOREIGN KEY (CustomerID)
+	REFERENCES [dbo].[testCustomer]  (CustomerID)
+);
+
+SET IDENTITY_INSERT dbo.testOrder ON;
+
+INSERT INTO dbo.testOrder(OrderID, OrderDate, CustomerID)
+VALUES (1,CAST('05/01/2023 01:49:34' AS DATE), (SELECT CustomerID FROM dbo.testCustomer WHERE CustomerID = 1));
+
+INSERT INTO dbo.testOrder(OrderID, OrderDate, CustomerID)
+VALUES (2,CAST('29/01/2023 10:01:55' AS DATE), (SELECT CustomerID FROM dbo.testCustomer WHERE CustomerID = 2));
+
+INSERT INTO dbo.testOrder(OrderID, CustomerID)
+VALUES (3, (SELECT CustomerID FROM dbo.testCustomer WHERE CustomerID = 3));
+
+97
+
+CREATE TABLE dbo.testOrderDetail (
+	OrderID INT
+	CONSTRAINT FK_OrderID FOREIGN KEY (OrderID)
+	REFERENCES [dbo].[testOrder]  (OrderID),
+	ItemID INT,
+	Price INT,
+	Qty INT,
+	LineItemTotal AS Price * Qty
+	PRIMARY KEY (OrderID, ItemID)
+);
+
+INSERT INTO dbo.testOrderDetail(OrderID, ItemID, Price, Qty)
+VALUES ((SELECT OrderID FROM dbo.testOrder WHERE OrderID = 1),1,20,3);
+
+INSERT INTO dbo.testOrderDetail(OrderID, ItemID, Price, Qty)
+VALUES ((SELECT OrderID FROM dbo.testOrder WHERE OrderID = 2),2,12,4);
+
+INSERT INTO dbo.testOrderDetail(OrderID, ItemID, Price, Qty)
+VALUES ((SELECT OrderID FROM dbo.testOrder WHERE OrderID = 3),3,1,32);
+
+98
+
+CREATE VIEW dbo.vw_Products
+AS  
+SELECT Product.ProductID, Name, Color, Size, Weight, ProductCostHistory.StandardCost, StartDate, EndDate, ProductCostHistory.ModifiedDate 
+FROM Production.Product
+JOIN Production.ProductCostHistory
+ON Product.ProductID = ProductCostHistory.ProductID
+
+
+SELECT * FROM dbo.vw_Products
+
+SELECT ProductID, Color, Name, StandardCost FROM dbo.vw_Products
+WHERE Color = 'Black'
+
+SELECT ProductID, Name, StandardCost, StartDate, EndDate FROM dbo.vw_Products
+WHERE Size = 'L'
+
+99
+
+CREATE VIEW dbo.vw_CustomerTotals
+AS  
+SELECT CustomerID, COUNT(SalesOrderID) AS TotalSalesByCustomer, MONTH(OrderDate) AS Month, YEAR (OrderDate) AS Year
+FROM Sales.SalesOrderHeader
+GROUP BY CustomerID, OrderDate;
+
+SELECT * FROM dbo.vw_CustomerTotals
+
+SELECT * FROM dbo.vw_CustomerTotals
+WHERE CustomerID = 22031
+
+SELECT * FROM dbo.vw_CustomerTotals
+WHERE Month = 10
+
+100
+
+CREATE PROCEDURE CreatingViewProducts AS
+
+SELECT * FROM dbo.vw_Products
+
+SELECT ProductID, Color, Name, StandardCost FROM dbo.vw_Products
+WHERE Color = 'Black'
+
+SELECT ProductID, Name, StandardCost, StartDate, EndDate FROM dbo.vw_Products
+WHERE Size = 'L';
+
+EXEC CreatingViewProducts;
+
+101
+
+CREATE PROCEDURE CreatingViewCustomer @CustomerID INT AS
+
+SELECT * FROM dbo.vw_CustomerTotals
+
+SELECT * FROM dbo.vw_CustomerTotals
+WHERE CustomerID = @CustomerID
+
+SELECT * FROM dbo.vw_CustomerTotals
+WHERE Month = 10;
+
+EXEC CreatingViewCustomer @CustomerID = 12333;
+
+102
+
+CREATE PROCEDURE dbo.usp_ProductSales @ProductID INT , @TotalSold INT OUTPUT AS
+
+SELECT @TotalSold = (SELECT SUM(OrderQty) FROM [Sales].[SalesOrderDetail]
+						WHERE ProductID = @ProductID);
+
+
+DECLARE @ProductsSold INT
+EXEC dbo.usp_ProductSales @ProductID = 773, @TotalSold = @ProductsSold OUTPUT;
+
+SELECT @ProductsSold;
+
+
+Hola buenas adjunto examen de SQL
