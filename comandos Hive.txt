@@ -47,6 +47,15 @@ CASE WHEN LENGTH(extranjerosmujeres) = 0 THEN "0" ELSE extranjerosmujeres END AS
 fx_carga, fx_datos_ini, fx_datos_fin 
 FROM padron_txt_2
 
+CREATE TABLE padron_txt_3
+AS SELECT COD_DISTRITO, TRIM(DESC_DISTRITO) AS DESC_DISTRITO, COD_DIST_BARRIO, TRIM(DESC_BARRIO) AS DESC_BARRIO, COD_BARRIO, COD_DIST_SECCION,
+COD_SECCION, COD_EDAD_INT,
+cast(ESPANOLESHOMBRES AS INT) AS ESPANOLESHOMBRES,
+cast(ESPANOLESMUJERES AS INT) AS ESPANOLESMUJERES,
+cast(extranjeroshombres AS INT) AS extranjeroshombres,
+cast(extranjerosmujeres AS INT) AS extranjerosmujeres,
+fx_carga, fx_datos_ini, fx_datos_fin 
+FROM padron_txt_2
 
 
 CREATE TABLE IF NOT EXISTS padron_parquet
@@ -60,9 +69,13 @@ FROM padron_txt;
 CREATE TABLE IF NOT EXISTS padron_parquet_2
 STORED AS parquet
 AS SELECT COD_DISTRITO, DESC_DISTRITO, COD_DIST_BARRIO, DESC_BARRIO, COD_BARRIO, COD_DIST_SECCION,
-COD_SECCION, COD_EDAD_INT, ESPANOLESHOMBRES, ESPANOLESMUJERES, extranjeroshombres, extranjerosmujeres, fx_carga, fx_datos_ini, fx_datos_fin
+COD_SECCION, COD_EDAD_INT,
+cast(ESPANOLESHOMBRES AS INT) AS ESPANOLESHOMBRES,
+cast(ESPANOLESMUJERES AS INT) AS ESPANOLESMUJERES,
+cast(extranjeroshombres AS INT) AS extranjeroshombres,
+cast(extranjerosmujeres AS INT) AS extranjerosmujeres,
+fx_carga, fx_datos_ini, fx_datos_fin
 FROM padron_txt_2;
-
 
 txt 35092080
 
@@ -71,6 +84,17 @@ txt_2 30575624
 parquet 1239860
 
 parquet_2 1237735
+
+INVALIDATE METADATA datos_padron.padron_parquet;
+
+INVALIDATE METADATA datos_padron.padron_parquet_2;
+
+
+SELECT desc_distrito, desc_barrio, SUM(espanoleshombres) AS total_esp_hombres, SUM(espanolesmujeres) AS total_esp_mujeres, 
+SUM(extranjeroshombres) AS total_ext_hombres, SUM(extranjerosmujeres) AS total_ext_mujeres
+FROM padron_parquet_2
+GROUP BY desc_distrito, desc_barrio;
+
 
 -----
 ([0-9a-zA-Z\-\:\.]+);([0-9a-zA-Z\-\:\.]+);([0-9a-zA-Z\-\:\.]+);([0-9a-zA-Z\-\:\.]+);([0-9a-zA-Z\-\:\.]+);
