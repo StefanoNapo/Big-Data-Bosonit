@@ -95,6 +95,90 @@ SUM(extranjeroshombres) AS total_ext_hombres, SUM(extranjerosmujeres) AS total_e
 FROM padron_parquet_2
 GROUP BY desc_distrito, desc_barrio;
 
+CREATE TABLE IF NOT EXISTS padron_particionado
+(COD_DISTRITO STRING, COD_DIST_BARRIO STRING, COD_BARRIO STRING,
+COD_DIST_SECCION STRING, COD_SECCION STRING, COD_EDAD_INT STRING, ESPANOLESHOMBRES INT, ESPANOLESMUJERES INT,
+EXTRANJEROSHOMBRES INT,EXTRANJEROSMUJERES INT,FX_CARGA STRING, FX_DATOS_INI STRING, FX_DATOS_FIN STRING)
+PARTITIONED BY (DESC_DISTRITO STRING, DESC_BARRIO STRING)
+STORED AS parquet
+
+set hive.exec.dynamic.partition=true;
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+
+set hive.exec.max.dynamic.partitions.pernode = 250;
+
+set hive.exec.max.dynamic.partitions.pernode=250;
+INSERT OVERWRITE TABLE padron_particionado PARTITION(DESC_DISTRITO = "CENTRO",DESC_BARRIO = "PALACIO")
+SELECT COD_DISTRITO, COD_DIST_BARRIO, COD_BARRIO, COD_DIST_SECCION,
+COD_SECCION, COD_EDAD_INT,  ESPANOLESHOMBRES,  ESPANOLESMUJERES,
+ extranjeroshombres, extranjerosmujeres,
+fx_carga, fx_datos_ini, fx_datos_fin FROM padron_parquet_2
+WHERE desc_distrito = "CENTRO" AND desc_barrio = "PALACIO";
+
+INSERT OVERWRITE TABLE padron_particionado PARTITION(DESC_DISTRITO,DESC_BARRIO)
+SELECT COD_DISTRITO, COD_DIST_BARRIO, COD_BARRIO, COD_DIST_SECCION,
+COD_SECCION, COD_EDAD_INT,  ESPANOLESHOMBRES,  ESPANOLESMUJERES,
+ extranjeroshombres, extranjerosmujeres,
+fx_carga, fx_datos_ini, fx_datos_fin, DESC_DISTRITO,DESC_BARRIO
+FROM padron_parquet_2;
+
+SELECT desc_distrito, desc_barrio, SUM(espanoleshombres) AS total_esp_hombres, SUM(espanolesmujeres) AS total_esp_mujeres, 
+SUM(extranjeroshombres) AS total_ext_hombres, SUM(extranjerosmujeres) AS total_ext_mujeres
+FROM padron_parquet_2
+WHERE desc_distrito = "CENTRO" OR desc_distrito = "LATINA" OR desc_distrito = "CHAMARTIN" OR desc_distrito = "TETUAN"
+OR desc_distrito = "VICALVARO" OR desc_distrito = "BARAJAS"
+GROUP BY desc_distrito, desc_barrio;
+
+
+SELECT desc_distrito, desc_barrio, max(espanoleshombres) AS max_esp_hombres, min(espanolesmujeres) AS min_esp_mujeres, 
+avg(extranjeroshombres) AS avg_ext_hombres, count(extranjerosmujeres) AS count_ext_mujeres
+FROM padron_parquet_2
+WHERE desc_distrito = "CENTRO" OR desc_distrito = "LATINA" OR desc_distrito = "CHAMARTIN" OR desc_distrito = "TETUAN"
+OR desc_distrito = "VICALVARO" OR desc_distrito = "BARAJAS"
+GROUP BY desc_distrito, desc_barrio;
+
+
+hdfs dfs -put /home/cloudera/workspace/shared_files/datos1.txt test
+
+CREATE DATABASE numeros;
+
+CREATE TABLE numeros_tbl (first_num INT, second_num INT, third_num INT)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+WITH SERDEPROPERTIES ("separatorChar" = ",");
+
+LOAD DATA INPATH 'hdfs://quickstart.cloudera:8020/user/cloudera/test/datos1.txt' INTO TABLE numeros_tbl;
+
+DROP TABLE numeros_tbl;
+
+hdfs dfs -put /home/cloudera/workspace/shared_files/datos1.txt test
+
+CREATE EXTERNAL TABLE numeros_tbl (first_num INT, second_num INT, third_num INT)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+WITH SERDEPROPERTIES ("separatorChar" = ",");
+
+LOAD DATA INPATH 'hdfs://quickstart.cloudera:8020/user/cloudera/test/datos1.txt' INTO TABLE numeros_tbl;
+
+SHOW CREATE TABLE numeros_tbl;
+
+DROP TABLE numeros_tbl;
+
+hdfs dfs -put /home/cloudera/workspace/shared_files/datos1.txt test
+
+CREATE EXTERNAL TABLE numeros_tbl (first_num INT, second_num INT, third_num INT)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.OpenCSVSerde'
+WITH SERDEPROPERTIES ("separatorChar" = ",")
+LOCATION 'hdfs://quickstart.cloudera:8020/user/cloudera/test/';
+
+SELECT * FROM numeros_tbl;
+
+
+hdfs dfs -put /home/cloudera/workspace/shared_files/datos2.txt test
+
+
+SELECT * FROM numeros_tbl;
+
+
 
 -----
 ([0-9a-zA-Z\-\:\.]+);([0-9a-zA-Z\-\:\.]+);([0-9a-zA-Z\-\:\.]+);([0-9a-zA-Z\-\:\.]+);([0-9a-zA-Z\-\:\.]+);
