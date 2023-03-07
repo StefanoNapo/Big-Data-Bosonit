@@ -1,8 +1,8 @@
 import time
 
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, regexp_replace, trim, count_distinct, count, length, sum, desc
-
+from pyspark.sql import Window
+from pyspark.sql.functions import col, trim, length, sum, desc, filter, round
 
 spark = (SparkSession
          .builder
@@ -67,16 +67,52 @@ df_chached = df_final_part.cache()
 
 df_chached.show()
 
-df_sums = df_chached.groupBy("DESC_DISTRITO", "DESC_BARRIO")\
+df_sums = df_chached.groupBy("DESC_DISTRITO", "DESC_BARRIO") \
     .agg(sum("ESPANOLESHOMBRES").alias("sum_esp_hom"), sum("ESPANOLESMUJERES").alias("sum_esp_muj"),
-         sum("EXTRANJEROSHOMBRES").alias("sum_ext_hom"), sum("EXTRANJEROSMUJERES").alias("sum_ext_muj"))\
+         sum("EXTRANJEROSHOMBRES").alias("sum_ext_hom"), sum("EXTRANJEROSMUJERES").alias("sum_ext_muj")) \
     .sort(desc("sum_ext_muj"), desc("sum_ext_hom"))
 
-df_sums.show(100)
+df_sums.show(30)
+
+df_desc = df_final.groupBy("DESC_DISTRITO", "DESC_BARRIO") \
+    .agg(sum("ESPANOLESHOMBRES").alias("sum_esp_hom")).orderBy("DESC_DISTRITO", "DESC_BARRIO")
+
+df_desc.show()
+
+df_joined = df_desc.join(df_final,
+                         (df_final["DESC_BARRIO"] == df_desc["DESC_BARRIO"]) & (
+                                 df_final["DESC_DISTRITO"] == df_desc["DESC_DISTRITO"]),
+                         "inner")
+
+df_joined.show()
+
+windowSpec = Window.partitionBy("DESC_DISTRITO", "DESC_BARRIO").orderBy("DESC_DISTRITO", "DESC_BARRIO")
+
+df_window = df_final.withColumn("sum_esp_hom", sum("ESPANOLESHOMBRES").over(windowSpec))
+
+df_window.show()
+
+df_contingencia = df_final \
+    .filter((df_final["DESC_DISTRITO"] == "CENTRO") | (df_final["DESC_DISTRITO"] == "BARAJAS") | (
+            df_final["DESC_DISTRITO"] == "RETIRO")) \
+    .groupBy("COD_EDAD_INT") \
+    .pivot("DESC_DISTRITO") \
+    .agg(sum("ESPANOLESMUJERES").alias("sum_ext_muj")) \
+    .orderBy("COD_EDAD_INT")
+
+df_contingencia.show()
+
+df_muj_edad_porc = df_contingencia\
+    .withColumn("BARAJAS PERC", round(col("BARAJAS") / (col("CENTRO") + col("BARAJAS") + col("RETIRO")) * 100, 2))\
+    .withColumn("CENTRO PERC", round(col("CENTRO") / (col("CENTRO") + col("BARAJAS") + col("RETIRO")) * 100, 2)) \
+    .withColumn("RETIRO PERC", round(col("RETIRO") / (col("CENTRO") + col("BARAJAS") + col("RETIRO")) * 100, 2))
+
+df_muj_edad_porc.show()
+
+df.write.partitionBy("DESC_DISTRITO", "DESC_BARRIO").mode('overwrite').format("parquet").save("probando.parquet")
 
 time.sleep(30)
 
 df_chached.unpersist()
 
-time.sleep(120)
-
+# time.sleep(120)
