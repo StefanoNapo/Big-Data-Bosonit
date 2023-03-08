@@ -109,10 +109,11 @@ df_muj_edad_porc = df_contingencia\
 
 df_muj_edad_porc.show()
 
-df.write.partitionBy("DESC_DISTRITO", "DESC_BARRIO").mode('overwrite').format("parquet").save("probando.parquet")
+
+df_final.write.partitionBy("COD_DISTRITO", "COD_BARRIO").save("padron.parquet")
 
 time.sleep(30)
 
 df_chached.unpersist()
 
-# time.sleep(120)
+time.sleep(120)
