@@ -63,11 +63,11 @@ df_final_part.show()
 
 print(df_final_part.rdd.getNumPartitions())
 
-df_chached = df_final_part.cache()
+df_cached = df_final_part.cache()
 
-df_chached.show()
+df_cached.show()
 
-df_sums = df_chached.groupBy("DESC_DISTRITO", "DESC_BARRIO") \
+df_sums = df_cached.groupBy("DESC_DISTRITO", "DESC_BARRIO") \
     .agg(sum("ESPANOLESHOMBRES").alias("sum_esp_hom"), sum("ESPANOLESMUJERES").alias("sum_esp_muj"),
          sum("EXTRANJEROSHOMBRES").alias("sum_ext_hom"), sum("EXTRANJEROSMUJERES").alias("sum_ext_muj")) \
     .sort(desc("sum_ext_muj"), desc("sum_ext_hom"))
@@ -109,11 +109,12 @@ df_muj_edad_porc = df_contingencia\
 
 df_muj_edad_porc.show()
 
+df_final.write.partitionBy("COD_DISTRITO", "COD_BARRIO").csv("padron-csv")
 
 df_final.write.partitionBy("COD_DISTRITO", "COD_BARRIO").save("padron.parquet")
 
-time.sleep(30)
+time.sleep(15)
 
-df_chached.unpersist()
+df_cached.unpersist()
 
 time.sleep(120)
