@@ -55,7 +55,7 @@ df_filtered = df_joined.filter(filtering_condition)
 df_filtered.show()
 df_filtered.printSchema()
 
-df_filtered2 = df_filtered.drop("udf_name").drop("M_CLIENT").drop("M_CCY").drop("M_SUCURSAL")
+df_filtered2 = df_filtered.drop("udf_name")
 
 df_filtered2.show()
 
