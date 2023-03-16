@@ -1,3 +1,4 @@
+from functools import reduce
 
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, first
@@ -42,21 +43,19 @@ df_joined = df_dropped_col.join(df_dropped_col_num, ["udf_name"])
 
 df_joined.show(150)
 
-
 filter_values = ["NULL", "null", "^\\s+$", "0.000000000000"]
 
-df_filtered = df_joined.filter(~col("M_DISCMARGIN").isin(filter_values) |
-                               ~col("M_DIRECTIAV").isin(filter_values) |
-                               ~col("M_LIQDTYCHRG").isin(filter_values) |
-                               ~col("M_CRDTCHRG").isin(filter_values) |
-                               ~col("M_MVA").isin(filter_values) |
-                               ~col("M_RVA") .isin(filter_values) |
-                               ~col("M_SELLER").isin(filter_values))
+columns_to_filter = ["M_DISCMARGIN", "M_DIRECTIAV", "M_LIQDTYCHRG", "M_CRDTCHRG", "M_MVA", "M_RVA", "M_SELLER"]
+
+# df_filtered = df_joined.rdd.map(lambda c: ~col[c].isin(filter_values)).reduce(lambda x: x or x)
+filtering_condition = reduce(lambda x, y: x | y, list(map(lambda x: ~col(x).isin(filter_values), columns_to_filter)))
+
+df_filtered = df_joined.filter(filtering_condition)
 
 df_filtered.show()
 df_filtered.printSchema()
 
-df_filtered2 = df_filtered.drop("udf_name").drop("nb").drop("M_CLIENT").drop("M_CCY").drop("M_SUCURSAL")
+df_filtered2 = df_filtered.drop("udf_name").drop("M_CLIENT").drop("M_CCY").drop("M_SUCURSAL")
 
 df_filtered2.show()
 
