@@ -2,6 +2,7 @@ package org.example
 
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.functions.{avg, col}
 /**
  * @author ${user.name}
  */
@@ -30,6 +31,32 @@ object App {
 
     rddReducedByKey.collect().foreach(println)
 
+    val tabla_spark_path = "tabla_spark.csv"
+
+    val tabla_premium_path = "tabla_premium_spark.csv"
+
+    val df_tabla = spark.read.format("csv")
+      .option("inferSchema", "true")
+      .option("header", "true")
+      .option("delimiter", ";")
+      .load(tabla_spark_path)
+
+    val df_tabla_premium = spark.read.format("csv")
+      .option("inferSchema", "true")
+      .option("header", "true")
+      .option("delimiter", ";")
+      .load(tabla_premium_path)
+
+    df_tabla.show()
+
+    df_tabla_premium.show()
+
+    val df_precio_por_cat = df_tabla.groupBy("categoría").agg(avg(col("precio")))
+
+    df_precio_por_cat.show()
+
+    df_tabla.printSchema()
   }
 
 }
+
